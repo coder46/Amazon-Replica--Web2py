@@ -1,0 +1,45 @@
+{{extend 'layout.html'}}
+<h2>Product: {{=product.name}}</h2>
+<h3 style='text-align:right'><a href={{URL('shopcart')}}><img width="100" src="Desktop/cart.png"/></a></h3>
+<center>
+	<img width="200px" src="{{=URL('download',args=product.pic)}}"/><br/>
+	<table border="1">
+		<tr>
+			<td style="text-align:right">Brand:</td>
+			<td style="text-align:left">{{=(db(db.brands.id==product.brand).select(db.brands.name))}}</td>
+		</tr>
+		<tr>
+			<td style="text-align:right">Description:</td>
+			<td style="text-align:left">{{=product.descr}}</td>
+		</tr>
+		<tr>
+			<td style="text-align:right">Quantity:</td>
+			<td style="text-align:left">{{if product.quant:}}{{=product.quant}}{{else:}}NOT IN STOCK!!{{pass}}</td>
+		</tr>
+		<tr>
+			<td style="text-align:right">Price:</td>
+			<td style="text-align:left">{{=product.price}}</td>
+		</tr>
+		<tr>
+			{{=A('ADD TO CART',_href=URL('buy',args=(product.id)))}}
+		</tr>
+	</table>
+</center>
+
+
+{{if len(comments):}}
+<h2>Reviews:</h2>
+	{{for post in comments:}}<br /><p>
+		<p>{{=post.author}} says <i>{{=post.body}}</i></p>
+	{{pass}}</p>
+{{else:}}
+	<h2>No reviews posted yet!</h2>
+{{pass}}
+<h2>Post a review</h2>
+{{=form}}
+
+
+
+	
+			
+

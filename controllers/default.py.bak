@@ -1,0 +1,150 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a samples controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+## - call exposes all registered services (none by default)
+#########################################################################
+
+
+def index():
+    """
+    example action using the internationalization operator T and flash
+    rendered by views/default/index.html or views/generic.html
+
+    if you need a simple wiki simple replace the two lines below with:
+    return auth.wiki()
+    """
+    response.flash = T("Welcome to web2py!")
+    return dict(message=T('Hello World'))
+
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    """
+    return dict(form=auth())
+
+
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+
+def search():
+	form=SQLFORM.factory(
+			Field('name','string',label="",comment="kjflkdsjf"),
+			Field('cat','list:string',requires=IS_IN_SET(["BY NAME","BY TAGS","BY BRAND"]),label="")
+			)
+	#form.vars.name="Search"
+	if form.accepts(request,session):
+		redirect(URL(r=request,f="search_results?name=%s"%form.vars.name))
+		#redirect(URL(r=request,f="search_results",args=['form.vars.name','form.vars.cat']))
+	elif form.errors:
+		response.flash="ERRORS!!!"
+	return dict(form=form)
+
+def search_results():
+	name=str(request.vars.name)
+	records=db((db.tags.tag==name) & (db.tags.pid==db.product.id)).select(orderby=db.product.id)
+	#return dict(records=records,form1=crud.read(db.product,product.pic))
+	return dict(showcase=SHOWCASE(records),title='Search Results')
+
+def details():
+    
+    #take arg or redirect
+    id = request.args(0) or redirect(URL('index'))
+    
+    #query filtered
+    query =db.product.id==int(id)
+    rows=db(query).select()   
+    
+    #return object
+    showcase = SHOWCASE(rows)
+    
+    # if has data creates other objects   
+    if rows:
+        
+        #page Title   
+        row = rows[0]                  
+        title = "%(brand)s - %(price)s" % \
+            dict(brand=row.brand,\
+                 price=row.price)
+        
+        #Form config            
+        #db.client.id_car.default = id
+        #db.client.id_car.readable = False
+        #db.client.id_car.writable = False 
+        
+        #cretes the form       
+        #form = SQLFORM(db.client,formstyle='divs',submit_button='Send')
+        
+        #validation of the form   
+        #if form.accepts(request, session):
+            
+        #    try:
+        #        subject='Client %s wants to buy %s ' % (form.vars.name,form.vars.id_car)
+        #        email_user(sender=form.vars.email,\
+        #                   message='Tel: %s - Finance? %s - Change? %s - Date: %s '\
+        #                            % (form.vars.tel,form.vars.finance,form.vars.change,form.vars.date),\
+        #                   subject=subject)
+        #    except Exception, e:
+        #        pass               
+                  
+        #    response.flash = 'Accepted'
+            
+            #Success Message
+        #    form = DIV(H3('Message sent, we will contact you soon'))
+                
+        #elif form.errors:
+        #    response.flash = 'Errors'
+                                        
+        return dict(showcase=showcase,title=title,form=form)
+        
+    else:
+        return dict(showcase=H1('car not found'))                 
+    
+
+
+
+@auth.requires_signature()
+def data():
+    """
+    http://..../[app]/default/data/tables
+    http://..../[app]/default/data/create/[table]
+    http://..../[app]/default/data/read/[table]/[id]
+    http://..../[app]/default/data/update/[table]/[id]
+    http://..../[app]/default/data/delete/[table]/[id]
+    http://..../[app]/default/data/select/[table]
+    http://..../[app]/default/data/search/[table]
+    but URLs must be signed, i.e. linked with
+      A('table',_href=URL('data/tables',user_signature=True))
+    or with the signed load operator
+      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+    """
+    return dict(form=crud())

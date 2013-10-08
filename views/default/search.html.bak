@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<center>
+	{{=form.custom.begin}}
+	{{=form.custom.widget.name}}
+	{{=form.custom.widget.cat}}
+	{{=form.custom.submit}}
+	{{=form.custom.end}}
+	<!--<form method="post" action="search_results">
+		<input type="text" name="name"><br/>
+		<input type="text" name="cat">
+		<input type="submit">
+	</form>-->
+</center>
+

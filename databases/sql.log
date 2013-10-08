@@ -1,0 +1,130 @@
+timestamp: 2013-03-19T19:11:03.390019
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2013-03-19T19:11:03.517589
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-03-19T19:11:03.641348
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2013-03-19T19:11:03.798682
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2013-03-19T19:11:03.933798
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2013-03-19T19:11:04.090509
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2013-03-19T19:11:04.216246
+CREATE TABLE brands(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
+success!
+timestamp: 2013-03-19T19:11:04.349869
+CREATE TABLE categories(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
+success!
+timestamp: 2013-03-19T19:11:04.473952
+CREATE TABLE media(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pic CHAR(512),
+    vid CHAR(512)
+);
+success!
+timestamp: 2013-03-19T19:11:57.863096
+CREATE TABLE product(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    descr TEXT,
+    brand INTEGER REFERENCES brands (id) ON DELETE CASCADE,
+    price DOUBLE,
+    quant INTEGER
+);
+success!
+timestamp: 2013-03-19T19:12:29.833810
+ALTER TABLE media ADD pid INTEGER REFERENCES product (id) ON DELETE CASCADE;
+timestamp: 2013-03-19T19:12:30.017012
+CREATE TABLE tags(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pid INTEGER REFERENCES product (id) ON DELETE CASCADE,
+    tag CHAR(512)
+);
+success!
+timestamp: 2013-03-19T19:12:30.184925
+CREATE TABLE purchase(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pid INTEGER REFERENCES product (id) ON DELETE CASCADE,
+    name CHAR(512)
+);
+success!
+timestamp: 2013-03-20T23:42:14.985961
+ALTER TABLE product ADD pic CHAR(512);
+timestamp: 2013-03-22T18:00:33.404941
+CREATE TABLE reviews(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pid INTEGER REFERENCES product (id) ON DELETE CASCADE,
+    review TEXT
+);
+success!
+timestamp: 2013-03-22T18:06:43.358441
+ALTER TABLE reviews ADD email CHAR(512);
+timestamp: 2013-03-22T18:06:43.513950
+ALTER TABLE reviews ADD name CHAR(512);
+timestamp: 2013-03-22T18:25:04.490043
+ALTER TABLE reviews ADD body TEXT;
+timestamp: 2013-03-22T18:25:04.660291
+ALTER TABLE reviews ADD author CHAR(512);
+timestamp: 2013-04-29T20:14:54.686098
+ALTER TABLE purchase ADD cid INTEGER;
+timestamp: 2013-04-29T21:24:57.236248
+CREATE TABLE plugin_web2admin_history(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    w2a_action CHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!

@@ -1,0 +1,53 @@
+{{extend 'layout.html'}}
+<script>
+	var list=new Array
+	var price=new Array
+	function getList(x,y)
+	{
+		list.push(x)
+		price.push(y)
+	}
+	function checkALL(field)
+	{
+		var sum=0;
+		for(i=0;i<field.length;i++)
+		{
+			if(field[i].checked==true)
+			{
+				sum+=price[i]
+			}
+		}
+		alert(sum)
+	}
+	function test()
+	{
+		alert(price[0])
+	}
+
+</script>
+<h2>Shopping Cart</h2>
+{{sum=0}}
+<!--<form method='post' onsubmit="test()">-->
+	<table border="1">
+		{{for item in records:}}
+			<tr>
+				<td>{{=item.name}}</td>
+				<td>{{=item.price}}</td>
+				{{sum=sum+(item.price)}}
+				<!--<td><input type="checkbox" name="ch[]" ></input></td>
+				<script>getList(10,20)</script>-->
+			</tr>
+		{{pass}}
+	</table>
+	<!--<input type="submit">
+	<form method="POST" action="">
+		{{for i in range(10):}}
+		<input type="text"/>
+		{{pass}}
+	</form>-->
+	<!--</form>-->
+<!--<button onclick="{{=URL('index')}}">CLICK</button>-->
+<center>TOTAL SUM : {{=sum}}</center>
+
+
+	

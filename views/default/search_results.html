@@ -1,0 +1,27 @@
+{{extend 'layout.html'}}
+<table width="100%" border="1">
+	<tr>
+		<th style='text-align:center'>Product</th>
+		<th style='text-align:center'>Quantity</th>
+		<th style='text-align:center'>Price</th>
+	</tr>
+	{{for item in records:}}
+	<tr>
+		<td style='text-align:center'>
+			{{=A(IMG(_src=URL('download',args=item.pic),_width="200"),_href=URL('show',args=(item.id)))}}
+		</td>
+		<td style='text-align:center'>
+			{{=item.quant}}
+		</td>
+		<td style='text-align:center'>
+			${{=item.price}}
+		</td>
+		<td style='tqext-align:center'>
+			{{=A('ADD TO CART',_href=URL('buy',args=(item.id)))}}
+		</td>
+		{{pass}}
+	</tr>
+	<hr>
+</table>
+
+

@@ -1,0 +1,107 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,True}}
+{{extend 'plugin_web2admin/layout.html'}}
+
+
+{{ block head}}
+<link href="{{=URL('static', 'plugin_web2admin/css/select2.css')}}" rel="stylesheet" type="text/css" />
+{{end}}
+
+{{block center}}
+{{include}}
+{{end}}
+
+{{block right_sidebar}}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <!-- Tables -->
+    <li class="nav-header">{{=T('Tables')}}</li>
+    <li><a href="{{=URL('plugin_web2admin', 'index')}}">{{=T('home')}}</a></li>
+    {{=LOAD('plugin_web2admin','index.load', ajax=True)}}
+    <!-- Root menu -->
+    {{if auth.has_membership('w2a_root'):}}
+    <li class="nav-header">{{=T('w2a Root')}}</li>
+    <a href="{{=URL('plugin_web2admin','permissions')}}">{{=T('Manage permissions')}}</a>
+    {{pass}}
+    <!-- Filters -->
+    {{if 'w2a_filters' in globals() and w2a_filters:}}
+    <li class="nav-header">{{=T('filters')}}</li>
+      {{for fltr in w2a_filters:}}
+      {{=get_filter_links(fltr)}}
+      {{pass}}
+    {{pass}}
+    <!-- External links -->
+    {{if plugins.web2admin.custom_sidebar_title and plugins.web2admin.custom_sidebar_links:}}
+      <li class="nav-header">{{=plugins.web2admin.custom_sidebar_title}}</li>
+      {{for link in plugins.web2admin.custom_sidebar_links:}}
+      <li>{{=link}}<li>
+      {{pass}}
+    {{pass}}    
+      <!-- History -->
+    {{=LOAD('plugin_web2admin', 'history.load', ajax=True)}}
+  </ul>
+</div><!--/.well -->
+
+{{end}}
+    
+{{block footer}} <!-- this is default footer -->
+{{if len(plugins.web2admin.dbs)>1:}}
+<ul id="db-selector" style="display: none;" class="nav">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      {{=T('Databases')}}
+    </a>
+    <ul class="dropdown-menu">
+      {{for i, b in enumerate(plugins.web2admin.dbs):}}
+      <li><a tabindex="-1" href="{{=URL('plugin_web2admin', 'change_db', args=i)}}">
+          {{if i== session.dbindex:}}<i class="icon-ok"></i>{{pass}}
+          {{=b._uri}}
+      </a></li>
+      {{pass}}
+    </ul>
+  </li>
+</ul>
+{{pass}}
+<div id="poweredBy" class="pull-right">
+  {{=T('Powered by')}}
+  <a href="http://www.web2py.com/">web2py</a>
+</div>
+<script src="{{=URL('static','plugin_web2admin/js/select2.min.js')}}"></script>
+<script type="text/javascript">
+        $(function(){
+        /* Remove unwanted elements */
+        $("#header").html("");
+        $(".nav-collapse").remove();
+        $(".brand").replaceWith('<a class="brand" href="{{=URL('plugin_web2admin', 'index')}}">{{=plugins.web2admin.logo or B('web',SPAN(2),'admin')}}</a>');
+        /* Add database selector */
+        if ($("#db-selector").length > 0) {
+        $(".brand").after($("#db-selector").show());
+        }
+        /* Add master search*/
+        $("#navbar").after('<form class="navbar-search pull-right"><input id="masterSearch" type="hidden"></form>');
+        var query = ''
+        $("#masterSearch").select2({
+            placeholder: "Search",
+            width: "200px",
+            minimumInputLength: 3,
+            ajax: {
+                url: "{{=URL('plugin_web2admin', 'master_search.load')}}",
+                data: function (term, page) {
+                	query = term; // used on change event
+                    return {
+                        q: term, // search term
+                        page_limit: 10,
+                    };
+                },
+                results: function (data, page) { 
+                    return {results: eval(data)}
+                }
+            },
+        });
+        $("#masterSearch").on("change",function(ev){
+        	window.location.href= "{{=URL('plugin_web2admin', 'view_table')}}/"+ev.val+"/"+ev.val+"?keywords="+query;
+        });
+        });
+      </script>
+{{end}}
+
+

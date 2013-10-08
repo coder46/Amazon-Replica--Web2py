@@ -1,0 +1,25 @@
+{{extend 'layout.html'}}
+<body background-color:black>
+<center>
+	{{=form.custom.begin}}
+	{{=form.custom.widget.name}}
+	{{=form.custom.widget.cat}}
+	{{=form.custom.submit}}
+	{{=form.custom.end}}
+	<!--<form method="post" action="search_results">
+		<input type="text" name="name"><br/>
+		<input type="text" name="cat">
+		<input type="submit">
+	</form>-->
+	{{count=0}}
+	{{for item in records:}}
+		{{=A(IMG(_src=URL('download',args=item.pic),_width="200"),_href=URL('show',args=(item.id)))}}
+		{{count=count+1}}
+		{{if(count%3==0):}}
+			<br/>
+			{{pass}}
+		{{if(count==12):break}}
+		{{pass}}
+</center>
+<a href="#" class="button">Register</a>
+</body>

@@ -1,0 +1,71 @@
+{{extend 'plugin_web2admin/w2a_layout.html'}}
+
+{{if tables:}}
+<table class="table table-hover table-condensed table-bordered">
+  <thead>
+    <tr>
+      <th>
+        {{=T('Table')}}
+      </th>
+      <th>
+        {{=T('Count')}}
+      </th>
+      <th>
+        {{=T('Actions')}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {{for table in tables:}}
+    <tr>
+      <td>
+        <a href="{{=URL('plugin_web2admin','view_table', args=table)}}">
+        {{=table}} 
+        </a>
+      </td>
+      <td>
+        {{=D()(D()[table]).count()}}
+      </td>
+      <td>
+         <div class="btn-group">
+        <a class="btn btn-mini btn-success" href="{{=URL('plugin_web2admin','view_table', args=table)}}">
+          <i class="icon-zoom-in"></i> {{if plugins.web2admin.showbuttontext:}}{{=T('View')}}{{pass}}
+        </a>
+        <a class="btn btn-mini btn-success" href="{{=URL('plugin_web2admin', 'fields', args=table)}}" data-toggle="modal" data-target="#fieldsModal">
+          <i class="icon-th-list"></i> {{if plugins.web2admin.showbuttontext:}}{{=T('Fields')}}{{pass}}
+        </a>
+        {{if  check_access(table, 'w2a_create'):}}
+        <a class="btn btn-mini btn-success"
+           href="{{=URL('plugin_web2admin', 'view_table',
+           args=(table,table,'new', table), user_signature=True)}}">
+          <i class="icon-plus"></i> {{if plugins.web2admin.showbuttontext:}}{{=T('New')}}{{pass}}
+        </a>
+        {{pass}}
+        </div>
+      </td>
+    </tr>
+    {{pass}}
+  </tbody>
+</table>
+{{else:}}
+<p>{{=T('Sorry, you do not have permission to access any tables.')}}</p>
+{{pass}}
+
+<div class="modal hide fade" id="fieldsModal" tabindex="-1" role="dialog" aria-labelledby="fieldsModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal" aria-hidden="true" href="#">&times;</a>
+    <h3 id="fieldsModalLabel">{{=T('Fields')}}</h3>
+  </div>
+  <div id="fields-body" class="modal-body"></div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+	  $('body').on('hidden', '.modal', function () {
+         $(this).removeData('modal');
+      });
+	});
+</script>

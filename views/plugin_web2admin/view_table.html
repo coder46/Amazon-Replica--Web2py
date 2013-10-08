@@ -1,0 +1,31 @@
+{{extend 'plugin_web2admin/w2a_layout.html'}}
+
+{{if form:}}
+{{=form.custom.widget.action}}
+{{pass}}
+{{=grid}}
+
+<script type="text/javascript">
+$(function(){
+/* Remove the select if there is no table */
+if ($('.web2py_grid .web2py_table th').length == 0) {
+$('#no_table_action').remove();
+}
+/* Add the action select to the table header */
+	if ($('#no_table_action').length > 0) {
+		$('.web2py_grid .web2py_table th:first').html('<input id="checkall" name="checkall" type="checkbox" value="1"> '); 
+		$('.web2py_grid .web2py_table th:first').append($('#no_table_action'));
+		$('#no_table_action').select2({width:'100px',  placeholder:"{{=T('Action')}}"});
+		$('form').submit(function(){
+			var action = $('#no_table_action').val();
+			if(action != ''){
+				$.post('{{=request.url}}', $(this).serialize() + '&action=' + action);
+				window.location.reload();
+			}
+		});
+		$('#checkall').click(function(){
+			$('.web2py_grid .web2py_table tbody tr>td input[name=records]').attr('checked', $(this).is(':checked'));
+		});
+	}
+});
+</script>
